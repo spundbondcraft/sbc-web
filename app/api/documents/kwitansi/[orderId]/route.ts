@@ -17,15 +17,11 @@ export async function POST(req: NextRequest, { params }: { params: { orderId: st
 
   const invNum = order.invoiceNumber ?? generateInvoiceNumber(order.codeFixed ?? order.codePra ?? '')
 
-  const buffer = await renderToBuffer(
-    React.createElement(KwitansiPDF, { order, invoiceNumber: invNum })
-  )
+  const element = React.createElement(KwitansiPDF, { order, invoiceNumber: invNum }) as any
 
-  const { url } = await uploadImage(
-    buffer,
-    'kwitansi',
-    `kwitansi_${order.id}`
-  )
+  const buffer = await renderToBuffer(element)
+
+  const { url } = await uploadImage(buffer, 'kwitansi', `kwitansi_${order.id}`)
 
   await db.update(orders)
     .set({ kwitansiUrl: url, updatedAt: new Date() })
