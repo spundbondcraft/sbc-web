@@ -1,23 +1,21 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const isAdminRoute = req.nextUrl.pathname.startsWith('/admin')
   const isLoginPage = req.nextUrl.pathname === '/admin/login'
 
   if (!isAdminRoute) return NextResponse.next()
 
-  const token = await getToken({
-    req,
-    secret: process.env.NEXTAUTH_SECRET,
-  })
+  const sessionToken =
+    req.cookies.get('next-auth.session-token')?.value ||
+    req.cookies.get('__Secure-next-auth.session-token')?.value
 
-  if (!token && !isLoginPage) {
+  if (!sessionToken && !isLoginPage) {
     return NextResponse.redirect(new URL('/admin/login', req.url))
   }
 
-  if (token && isLoginPage) {
+  if (sessionToken && isLoginPage) {
     return NextResponse.redirect(new URL('/admin', req.url))
   }
 
