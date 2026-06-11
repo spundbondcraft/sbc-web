@@ -1,10 +1,11 @@
-import { auth } from '@/lib/auth'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminNotificationBell } from '@/components/admin/AdminNotificationBell'
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth()
+  const session = await getServerSession(authOptions)
   if (!session) redirect('/admin/login')
 
   return (

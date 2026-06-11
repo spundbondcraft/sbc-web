@@ -1,10 +1,11 @@
-import NextAuth from 'next-auth'
-import Credentials from 'next-auth/providers/credentials'
+import NextAuth, { type NextAuthOptions } from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
-    Credentials({
+    CredentialsProvider({
+      name: 'Credentials',
       credentials: {
         password: { label: 'Password', type: 'password' },
       },
@@ -32,4 +33,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
   },
-})
+}
+
+const handler = NextAuth(authOptions)
+export { handler as GET, handler as POST }
+export const auth = handler
